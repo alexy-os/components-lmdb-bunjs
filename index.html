@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Landing Page</title>
+</head>
+<body>
+  <div id="app">
+    <!-- Components will be injected here -->
+  </div>
+
+  <script>
+    (function() {
+      const app = document.getElementById('app');
+      const storageKey = 'components';
+      const versionKey = 'components_version';
+
+      async function fetchVersion() {
+        const response = await fetch('/version');
+        if (response.ok) {
+          const data = await response.json();
+          return data.version;
+        } else {
+          console.error('Failed to fetch version');
+          return null;
+        }
+      }
+
+      async function fetchComponents() {
+        const response = await fetch('/components');
+        if (response.ok) {
+          const data = await response.json();
+          return data.components;
+        } else {
+          console.error('Failed to fetch components');
+          return [];
+        }
+      }
+
+      async function loadComponents() {
+        let storedVersion = localStorage.getItem(versionKey);
+        const currentVersion = await fetchVersion();
+
+        if (storedVersion !== currentVersion.toString()) {
+          console.log('Version has changed, resetting local storage');
+          localStorage.removeItem(storageKey);
+          localStorage.setItem(versionKey, currentVersion);
+        }
+
+        let components = JSON.parse(localStorage.getItem(storageKey));
+        if (!components) {
+          components = await fetchComponents();
+          localStorage.setItem(storageKey, JSON.stringify(components));
+        }
+
+        console.log(components);
+
+        renderComponents(components);
+      }
+
+      function renderComponents(components) {
+        app.innerHTML = '';
+        for (let component of components) {
+          const div = document.createElement('div');
+          div.innerHTML = component.content;
+          app.appendChild(div);
+        }
+      }
+
+      loadComponents();
+    })();
+  </script>
+</body>
+</html>

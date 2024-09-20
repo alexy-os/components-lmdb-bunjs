@@ -1,0 +1,10 @@
+[
+  {
+    "id": "hero1",
+    "content": "<section class='hero'>Hero Content 1</section>"
+  },
+  {
+    "id": "hero2",
+    "content": "<section class='hero'>Hero Content 2</section>"
+  }
+]
